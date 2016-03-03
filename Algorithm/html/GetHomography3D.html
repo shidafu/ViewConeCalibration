@@ -1,0 +1,202 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>GetHomography3D</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-03"><meta name="DC.source" content="GetHomography3D.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Get 3D Homography of a projective geometry transform</a></li><li><a href="#3">Initial</a></li><li><a href="#4">Algorithm.</a></li><li><a href="#5">Set outputs.</a></li></ul></div><h2>Get 3D Homography of a projective geometry transform<a name="1"></a></h2><p>Author:WANG Lei,USTB,email&#65306;towanglei@163.com</p><p>Date:2016/3/3</p><p>Find <i>s</i> and  [ <i>H</i> ]:</p><p><img src="GetHomography3D_eq00495887508288446955.png" alt="$$\mathit{s} \left(\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right)=&#xA;\left(\begin{array}{cccc}&#xA;\mathit{h}_{11} &amp; \mathit{h}_{12} &amp; \mathit{h}_{13} &amp; \mathit{h}_{14}\\&#xA;\mathit{h}_{21} &amp; \mathit{h}_{22} &amp; \mathit{h}_{23} &amp; \mathit{h}_{24}\\&#xA;\mathit{h}_{31} &amp; \mathit{h}_{32}  &amp; \mathit{h}_{33} &amp; 1 \end{array}\right)&#xA;\left(\begin{array}{c} \mathit{x}\\ \mathit{y}\\ \mathit{z}\\ 1 \end{array}\right)$$"></p><p>Algorithom:</p><p><img src="GetHomography3D_eq05630466505379982187.png" alt="$$ \left(\begin{array}{ccccccccccc}&#xA;\mathit{x}_{1} &amp; \mathit{y}_{1} &amp; \mathit{z}_{1} &amp;1 &amp;0 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u}_{1}\mathit{x}_{1}&amp; \mathit{-u}_{1}\mathit{y}_{1}&amp; \mathit{-u}_{1}\mathit{z}_{1}\\&#xA;0 &amp;0 &amp;0 &amp;0 &amp; \mathit{x}_{1} &amp; \mathit{y}_{1} &amp; \mathit{z}_{1} &amp;1 &amp; \mathit{-v}_{1}\mathit{x}_{1}&amp; \mathit{-v}_{1}\mathit{y}_{1}&amp; \mathit{-v}_{1}\mathit{z}_{1}\\&#xA;                              &amp;   &amp;   &amp;   &amp;   &amp;   &amp; \vdots\\&#xA;\mathit{x_{n}} &amp; \mathit{y_{n}} &amp; \mathit{z_{n}} &amp;1 &amp;0 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u_{n}}\mathit{x_{n}}&amp; \mathit{-u_{n}}\mathit{y_{n}}&amp; \mathit{-u_{n}}\mathit{z_{n}}\\&#xA;0 &amp;0 &amp;0 &amp;0 &amp; \mathit{x_{n}} &amp; \mathit{y_{n}} &amp; \mathit{z_{n}} &amp;1 &amp; \mathit{-v_{n}}\mathit{x_{n}}&amp; \mathit{-v_{n}}\mathit{y_{n}}&amp; \mathit{-v_{n}}\mathit{z_{n}}\\&#xA;\end{array}\right)&#xA;\left(\begin{array}{ccccc}&#xA;\mathit{h}_{11} \\ \mathit{h}_{12} \\ \mathit{h}_{13}\\ \mathit{h}_{14}\\&#xA;\mathit{h}_{21} \\ \mathit{h}_{22} \\ \vdots\\&#xA;\mathit{h}_{31} \\ \mathit{h}_{32}&#xA;\end{array}\right)=&#xA;\left(\begin{array}{c}&#xA;\mathit{u}_{1} \\ \mathit{v}_{1} \\ \vdots \\ \mathit{u_{n}} \\ \mathit{v_{n}}&#xA;\end{array}\right)$$"></p><p><img src="GetHomography3D_eq17706912794890781747.png" alt="$$[\mathit{H_{list}}]=\left([\mathit{XYZUV_{list}}]^{T}\cdot [\mathit{XYZUV_{list}}]\right)^{-1}&#xA;                       \cdot[\mathit{XYZUV_{list}}]^{T}\cdot [\mathit{UV_{list}}]$$"></p><p><img src="GetHomography3D_eq11610719655675611393.png" alt="$$\mathit{s}=[\mathit{H}]\cdot[\mathit{XYZ1}]^{T}\cdot[\mathit{UV1}]&#xA;            \cdot\left( [\mathit{UV1}^{T} \cdot [\mathit{UV1} \right)$$"></p><pre class="codeinput"><span class="keyword">function</span> [H,s] = GetHomography3D(XYZ,UV)
+</pre><pre class="codeinput"><span class="comment">% Get 2D Homography of a projective geometry transform</span>
+<span class="comment">%</span>
+<span class="comment">% Inputs:</span>
+<span class="comment">%     UV----pointNum by cordNum matrix,</span>
+<span class="comment">%                  cordNum==2,pointNum&gt;=4,</span>
+<span class="comment">%                  [u1,v1;</span>
+<span class="comment">%                   u2,v2;</span>
+<span class="comment">%                     :]</span>
+<span class="comment">%     XY----pointNum by cordNum matrix,</span>
+<span class="comment">%                  cordNum==3,pointNum&gt;=4,</span>
+<span class="comment">%                  [x1,y1,z1;</span>
+<span class="comment">%                   x2,y2,z1;</span>
+<span class="comment">%                     :]</span>
+<span class="comment">%</span>
+<span class="comment">% Outputs:</span>
+<span class="comment">%     H----3 by 3 matrix: [h11 h12 h13 h14;</span>
+<span class="comment">%                          h21 h22 h23 h24;</span>
+<span class="comment">%                          h31 h32 h33 1]</span>
+<span class="comment">%     s----projective para</span>
+</pre><h2>Initial<a name="3"></a></h2><pre class="codeinput">[pointNum, cordNum]=size(XYZ);
+<span class="keyword">if</span> ~(cordNum==3 || cordNum==4)
+    error(<span class="string">'Input matrix size error!'</span>);
+<span class="keyword">end</span>
+XYZ1=ones(pointNum,4,<span class="string">'double'</span>);
+XYZ1(:,1:3)=XYZ(:,1:3);
+UV1=ones(pointNum,3,<span class="string">'double'</span>);
+UV1(:,1:2)=XYZ(:,1:2);
+HList=zeros(11,1,<span class="string">'double'</span>);
+XYZUVList=zeros(2*pointNum,11,<span class="string">'double'</span>);
+UVList=zeros(2*pointNum,1,<span class="string">'double'</span>);
+<span class="keyword">for</span> i=1:pointNum
+    XYZUVList(i*2-1,:)=[XYZ(i,1), XYZ(i,2), XYZ(i,3), 1, 0, 0, 0, 0, -1*UV(i,1)*XYZ(i,1), -1*UV(i,1)*XYZ(i,2), -1*UV(i,1)*XYZ(i,3)];
+    XYZUVList(i*2,:)=[0, 0, 0, 0, XYZ(i,1), XYZ(i,2), XYZ(i,3), 1, -1*UV(i,2)*XYZ(i,1), -1*UV(i,2)*XYZ(i,2), -1*UV(i,2)*XYZ(i,3)];
+    UVList(i*2-1,:)=UV(1,i);
+    UVList(i*2,:)=UV(2,i);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using GetHomography3D (line 61)
+Not enough input arguments.
+</pre><h2>Algorithm.<a name="4"></a></h2><pre class="codeinput">HList=inv(XYZUVList'*XYZUVList)*XYZUVList'*UVList;
+</pre><h2>Set outputs.<a name="5"></a></h2><pre class="codeinput">H(1,:)=HList(1:4,1);
+H(2,:)=HList(5:8,1);
+H(3,1:3)=HList(9:11,1);
+H(3,4)=1;
+s=H*XYZ1'*UV1*inv(UV1'*UV1);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Get 3D Homography of a projective geometry transform
+% Author:WANG Lei,USTB,email：towanglei@163.com
+%
+% Date:2016/3/3
+%
+% Find _s_ and  [ _H_ ]:
+%
+% $$\mathit{s} \left(\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right)=
+% \left(\begin{array}{cccc} 
+% \mathit{h}_{11} & \mathit{h}_{12} & \mathit{h}_{13} & \mathit{h}_{14}\\
+% \mathit{h}_{21} & \mathit{h}_{22} & \mathit{h}_{23} & \mathit{h}_{24}\\
+% \mathit{h}_{31} & \mathit{h}_{32}  & \mathit{h}_{33} & 1 \end{array}\right)
+% \left(\begin{array}{c} \mathit{x}\\ \mathit{y}\\ \mathit{z}\\ 1 \end{array}\right)$$
+%
+% Algorithom:
+%
+% $$ \left(\begin{array}{ccccccccccc}
+% \mathit{x}_{1} & \mathit{y}_{1} & \mathit{z}_{1} &1 &0 &0 &0 &0 & \mathit{-u}_{1}\mathit{x}_{1}& \mathit{-u}_{1}\mathit{y}_{1}& \mathit{-u}_{1}\mathit{z}_{1}\\
+% 0 &0 &0 &0 & \mathit{x}_{1} & \mathit{y}_{1} & \mathit{z}_{1} &1 & \mathit{-v}_{1}\mathit{x}_{1}& \mathit{-v}_{1}\mathit{y}_{1}& \mathit{-v}_{1}\mathit{z}_{1}\\
+%                               &   &   &   &   &   & \vdots\\
+% \mathit{x_{n}} & \mathit{y_{n}} & \mathit{z_{n}} &1 &0 &0 &0 &0 & \mathit{-u_{n}}\mathit{x_{n}}& \mathit{-u_{n}}\mathit{y_{n}}& \mathit{-u_{n}}\mathit{z_{n}}\\
+% 0 &0 &0 &0 & \mathit{x_{n}} & \mathit{y_{n}} & \mathit{z_{n}} &1 & \mathit{-v_{n}}\mathit{x_{n}}& \mathit{-v_{n}}\mathit{y_{n}}& \mathit{-v_{n}}\mathit{z_{n}}\\
+% \end{array}\right)
+% \left(\begin{array}{ccccc} 
+% \mathit{h}_{11} \\ \mathit{h}_{12} \\ \mathit{h}_{13}\\ \mathit{h}_{14}\\
+% \mathit{h}_{21} \\ \mathit{h}_{22} \\ \vdots\\
+% \mathit{h}_{31} \\ \mathit{h}_{32}
+% \end{array}\right)=
+% \left(\begin{array}{c} 
+% \mathit{u}_{1} \\ \mathit{v}_{1} \\ \vdots \\ \mathit{u_{n}} \\ \mathit{v_{n}}
+% \end{array}\right)$$
+%
+% $$[\mathit{H_{list}}]=\left([\mathit{XYZUV_{list}}]^{T}\cdot [\mathit{XYZUV_{list}}]\right)^{-1}
+%                        \cdot[\mathit{XYZUV_{list}}]^{T}\cdot [\mathit{UV_{list}}]$$
+%
+% $$\mathit{s}=[\mathit{H}]\cdot[\mathit{XYZ1}]^{T}\cdot[\mathit{UV1}]
+%             \cdot\left( [\mathit{UV1}^{T} \cdot [\mathit{UV1} \right)$$
+% 
+
+function [H,s] = GetHomography3D(XYZ,UV)
+% Get 2D Homography of a projective geometry transform
+%
+% Inputs:
+%     UVREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHpointNum by cordNum matrix,
+%                  cordNum==2,pointNum>=4,
+%                  [u1,v1;
+%                   u2,v2;
+%                     :]
+%     XYREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHpointNum by cordNum matrix,
+%                  cordNum==3,pointNum>=4,
+%                  [x1,y1,z1;
+%                   x2,y2,z1;
+%                     :]
+%
+% Outputs:
+%     HREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH3 by 3 matrix: [h11 h12 h13 h14;
+%                          h21 h22 h23 h24;
+%                          h31 h32 h33 1]
+%     sREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHprojective para
+%% Initial
+[pointNum, cordNum]=size(XYZ);
+if ~(cordNum==3 || cordNum==4)
+    error('Input matrix size error!');
+end
+XYZ1=ones(pointNum,4,'double');
+XYZ1(:,1:3)=XYZ(:,1:3);
+UV1=ones(pointNum,3,'double');
+UV1(:,1:2)=XYZ(:,1:2);
+HList=zeros(11,1,'double');
+XYZUVList=zeros(2*pointNum,11,'double');
+UVList=zeros(2*pointNum,1,'double');
+for i=1:pointNum
+    XYZUVList(i*2-1,:)=[XYZ(i,1), XYZ(i,2), XYZ(i,3), 1, 0, 0, 0, 0, -1*UV(i,1)*XYZ(i,1), -1*UV(i,1)*XYZ(i,2), -1*UV(i,1)*XYZ(i,3)];    
+    XYZUVList(i*2,:)=[0, 0, 0, 0, XYZ(i,1), XYZ(i,2), XYZ(i,3), 1, -1*UV(i,2)*XYZ(i,1), -1*UV(i,2)*XYZ(i,2), -1*UV(i,2)*XYZ(i,3)];
+    UVList(i*2-1,:)=UV(1,i);
+    UVList(i*2,:)=UV(2,i);
+end
+%% Algorithm.
+HList=inv(XYZUVList'*XYZUVList)*XYZUVList'*UVList;
+%% Set outputs.
+H(1,:)=HList(1:4,1);
+H(2,:)=HList(5:8,1);
+H(3,1:3)=HList(9:11,1);
+H(3,4)=1;
+s=H*XYZ1'*UV1*inv(UV1'*UV1);
+##### SOURCE END #####
+--></body></html>
