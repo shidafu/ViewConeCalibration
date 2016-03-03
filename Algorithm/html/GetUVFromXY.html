@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>GetUVFromXY</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-03"><meta name="DC.source" content="GetUVFromXY.m"><style type="text/css">
+      --><title>Get UV from XY according to 2D Homography of a projective geometry transform</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-03"><meta name="DC.source" content="GetUVFromXY.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,26 +66,18 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Get UV from XY according to 2D Homography of a projective geometry transform</a></li><li><a href="#3">Initial</a></li><li><a href="#4">Algorithm.</a></li></ul></div><h2>Get UV from XY according to 2D Homography of a projective geometry transform<a name="1"></a></h2><p>Author:WANG Lei,USTB,email&#65306;towanglei@163.com</p><p>Date:2016/3/3</p><p>Algorithom:</p><p><img src="GetUVFromXY_eq08750981380877240976.png" alt="$$\mathit{s} \left(\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right)=&#xA;\left(\begin{array}{ccc}&#xA;\mathit{h}_{11} &amp; \mathit{h}_{12} &amp; \mathit{h}_{13}\\&#xA;\mathit{h}_{21} &amp; \mathit{h}_{22} &amp; \mathit{h}_{23}\\&#xA;\mathit{h}_{31} &amp; \mathit{h}_{32} &amp; 1 \end{array}\right)&#xA;\left(\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right)$$"></p><pre class="codeinput"><span class="keyword">function</span> UV = GetUVFromXY(H,XY)
-</pre><pre class="codeinput"><span class="comment">% Get UV from XY according to 2D Homography of a projective geometry transform</span>
-<span class="comment">%</span>
-<span class="comment">% Inputs:</span>
-<span class="comment">%     H----3 by 3 matrix: [h11 h12 h13;</span>
-<span class="comment">%                          h21 h22 h23;</span>
-<span class="comment">%                          h31 h32  1]</span>
-<span class="comment">%     XY----pointNum by cordNum matrix,</span>
-<span class="comment">%                  cordNum==2,pointNum&gt;=4,</span>
-<span class="comment">%                  [x1,y1;</span>
-<span class="comment">%                   x2,y2;</span>
-<span class="comment">%                     :]</span>
-<span class="comment">%</span>
-<span class="comment">% Outputs:</span>
-<span class="comment">%     UV----pointNum by cordNum matrix,</span>
-<span class="comment">%                  cordNum==2,pointNum&gt;=4,</span>
-<span class="comment">%                  [u1,v1;</span>
-<span class="comment">%                   u2,v2;</span>
-<span class="comment">%                     :]</span>
-</pre><h2>Initial<a name="3"></a></h2><pre class="codeinput">[pointNum, cordNum]=size(XY);
+  </style></head><body><div class="content"><h1>Get UV from XY according to 2D Homography of a projective geometry transform</h1><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Algorithom:</li></ul></div><p>Get [ <i>UV</i> ] By solving:</p><p><img src="GetUVFromXY_eq00324903032663954186.png" alt="$$\mathit{s} \left[\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right]=&#xA;\left[\begin{array}{ccc}&#xA;\mathit{h}_{11} &amp; \mathit{h}_{12} &amp; \mathit{h}_{13}\\&#xA;\mathit{h}_{21} &amp; \mathit{h}_{22} &amp; \mathit{h}_{23}\\&#xA;\mathit{h}_{31} &amp; \mathit{h}_{32} &amp; 1 \end{array}\right]&#xA;\left[\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right]$$"></p><div><ul><li>Inputs:</li></ul></div><pre>   H----3 by 3 matrix: [h11 h12 h13;
+                        h21 h22 h23;
+                        h31 h32  1]
+   XY----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [x1,x2,...;
+                 y1,y2,...]</pre><div><ul><li>Outputs:</li></ul></div><pre>   UV----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [u1,u2,...;
+                 v1,v2,...]</pre><pre class="codeinput"><span class="keyword">function</span> UV = GetUVFromXY(H,XY)
+<span class="comment">% Initial</span>
+[cordNum, pointNum]=size(XY);
 <span class="keyword">if</span> ~(cordNum==2 || cordNum==3)
     error(<span class="string">'Input matrix size error!'</span>);
 <span class="keyword">end</span>
@@ -96,53 +88,55 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="keyword">if</span> wH==4
     H=[H(:,1:2) H(:,4)];
 <span class="keyword">end</span>
-XY1=ones(pointNum,3,<span class="string">'double'</span>);
-XY1(:,1:2)=XY(:,1:2);
-UV=zeros(pointNum,2,<span class="string">'double'</span>);
-</pre><pre class="codeoutput error">Error using GetUVFromXY (line 36)
+XY1=ones(3,pointNum,<span class="string">'double'</span>);
+XY1(1:2,:)=XY(1:2,:);
+UV=zeros(2,pointNum,<span class="string">'double'</span>);
+<span class="comment">% Algorithm</span>
+UVu=H(1,:)*XY1./H(3,:)*XY1;
+UV(:,1)=UVu;
+UVv=H(2,:)*XY1./H(3,:)*XY1;
+UV(:,2)=UVv;
+</pre><pre class="codeoutput error">Error using GetUVFromXY (line 37)
 Not enough input arguments.
-</pre><h2>Algorithm.<a name="4"></a></h2><pre class="codeinput">UVu=H(1,:)*XY1'./H(3,:)*XY1';
-UV(:,1)=UVu';
-UVv=H(2,:)*XY1'./H(3,:)*XY1';
-UV(:,2)=UVv';
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Get UV from XY according to 2D Homography of a projective geometry transform
-% Author:WANG Lei,USTB,email：towanglei@163.com
+% * Author: WANG Lei,USTB
 %
-% Date:2016/3/3
+% * Link: <https://github.com/shidafu/ViewConeCalibration.git>
 %
-% Algorithom:
+% * Date:2016/3/3
 %
-% $$\mathit{s} \left(\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right)=
-% \left(\begin{array}{ccc} 
+% * Algorithom:
+%
+% Get [ _UV_ ] By solving:
+%
+% $$\mathit{s} \left[\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right]=
+% \left[\begin{array}{ccc} 
 % \mathit{h}_{11} & \mathit{h}_{12} & \mathit{h}_{13}\\
 % \mathit{h}_{21} & \mathit{h}_{22} & \mathit{h}_{23}\\
-% \mathit{h}_{31} & \mathit{h}_{32} & 1 \end{array}\right)
-% \left(\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right)$$
+% \mathit{h}_{31} & \mathit{h}_{32} & 1 \end{array}\right]
+% \left[\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right]$$
 %
-
-function UV = GetUVFromXY(H,XY)
-% Get UV from XY according to 2D Homography of a projective geometry transform
+% * Inputs:
 %
-% Inputs:
 %     HREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH3 by 3 matrix: [h11 h12 h13;
 %                          h21 h22 h23;
 %                          h31 h32  1]
-%     XYREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHpointNum by cordNum matrix,
+%     XYREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHcordNum by pointNum matrix,
 %                  cordNum==2,pointNum>=4,
-%                  [x1,y1;
-%                   x2,y2;
-%                     :]
+%                  [x1,x2,...;
+%                   y1,y2,...]
 %
-% Outputs:
-%     UVREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHpointNum by cordNum matrix,
+% * Outputs:
+%
+%     UVREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHcordNum by pointNum matrix,
 %                  cordNum==2,pointNum>=4,
-%                  [u1,v1;
-%                   u2,v2;
-%                     :]
-%% Initial
-[pointNum, cordNum]=size(XY);
+%                  [u1,u2,...;
+%                   v1,v2,...]
+function UV = GetUVFromXY(H,XY)
+% Initial
+[cordNum, pointNum]=size(XY);
 if ~(cordNum==2 || cordNum==3)
     error('Input matrix size error!');
 end
@@ -153,13 +147,13 @@ end
 if wH==4
     H=[H(:,1:2) H(:,4)];
 end
-XY1=ones(pointNum,3,'double');
-XY1(:,1:2)=XY(:,1:2);
-UV=zeros(pointNum,2,'double');
-%% Algorithm.
-UVu=H(1,:)*XY1'./H(3,:)*XY1';
-UV(:,1)=UVu';
-UVv=H(2,:)*XY1'./H(3,:)*XY1';
-UV(:,2)=UVv';
+XY1=ones(3,pointNum,'double');
+XY1(1:2,:)=XY(1:2,:);
+UV=zeros(2,pointNum,'double');
+% Algorithm
+UVu=H(1,:)*XY1./H(3,:)*XY1;
+UV(:,1)=UVu;
+UVv=H(2,:)*XY1./H(3,:)*XY1;
+UV(:,2)=UVv;
 ##### SOURCE END #####
 --></body></html>
