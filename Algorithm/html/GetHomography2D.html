@@ -66,7 +66,17 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Get 2D Homography of a projective geometry transform</h1><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Algorithom:</li></ul></div><p>Get <i>s</i> and  [ <i>H</i> ] From:</p><p><img src="GetHomography2D_eq00324903032663954186.png" alt="$$\mathit{s} \left[\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right]=&#xA;\left[\begin{array}{ccc}&#xA;\mathit{h}_{11} &amp; \mathit{h}_{12} &amp; \mathit{h}_{13}\\&#xA;\mathit{h}_{21} &amp; \mathit{h}_{22} &amp; \mathit{h}_{23}\\&#xA;\mathit{h}_{31} &amp; \mathit{h}_{32} &amp; 1 \end{array}\right]&#xA;\left[\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right]$$"></p><p>By solving:</p><p><img src="GetHomography2D_eq10718387655869429946.png" alt="$$\left[\begin{array}{cccccccc}&#xA;\mathit{x}_{1} &amp; \mathit{y}_{1} &amp;1 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u}_{1}\mathit{x}_{1}&amp; \mathit{-u}_{1}\mathit{y}_{1}\\&#xA;0 &amp;0 &amp;0 &amp; \mathit{x}_{1} &amp; \mathit{y}_{1} &amp;1 &amp; \mathit{-v}_{1}\mathit{x}_{1}&amp; \mathit{-v}_{1}\mathit{y}_{1}\\&#xA;                              &amp;   &amp;   &amp;   &amp; \vdots\\&#xA;\mathit{x_{n}} &amp; \mathit{y_{n}} &amp;1 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u_{n}}\mathit{x_{n}}&amp; \mathit{-u_{n}}\mathit{y_{n}}\\&#xA;0 &amp;0 &amp;0 &amp; \mathit{x_{n}} &amp; \mathit{y_{n}} &amp;1 &amp; \mathit{-v_{n}}\mathit{x_{n}}&amp; \mathit{-v_{n}}\mathit{y_{n}}\\&#xA;\end{array}\right]&#xA;\left[\begin{array}{c}&#xA;\mathit{h}_{11} \\ \mathit{h}_{12} \\ \mathit{h}_{13}\\&#xA;\mathit{h}_{21} \\ \mathit{h}_{22} \\ \mathit{h}_{23}\\&#xA;\mathit{h}_{31} \\ \mathit{h}_{32}&#xA;\end{array}\right]=&#xA;\left[\begin{array}{c}&#xA;\mathit{u}_{1} \\ \mathit{v}_{1} \\ \vdots \\ \mathit{u_{n}} \\ \mathit{v_{n}}&#xA;\end{array}\right]$$"></p><p><img src="GetHomography2D_eq17395726815244659456.png" alt="$$[\mathit{H_{list}}]=\left([\mathit{XYUV_{list}}]^\mathrm{T}\cdot [\mathit{XYUV_{list}}]\right)^{-1}&#xA;                       \cdot[\mathit{XYUV_{list}}]^\mathrm{T}\cdot [\mathit{UV_{list}}]$$"></p><p><img src="GetHomography2D_eq02467003451201113503.png" alt="$$\mathit{s}=[\mathit{H}]\cdot[\mathit{XY1}]\cdot[\mathit{UV1}]^\mathrm{T}&#xA;            \cdot\left( [\mathit{UV1}] \cdot [\mathit{UV1}]^\mathrm{T} \right)$$"></p><div><ul><li>Inputs:     XY----cordNum by pointNum matrix,                  cordNum==2,pointNum&gt;=4,                  [x1,x2,...;                   y1,y2,...]     UV----cordNum by pointNum matrix,                  cordNum==2,pointNum&gt;=4,                  [u1,u2,...;                   v1,v2,...]</li></ul></div><div><ul><li>Outputs:     H----3 by 3 matrix: [h11 h12 h13;                          h21 h22 h23;                          h31 h32  1]     s----projective para</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [H,s] = GetHomography2D(XY,UV)
+  </style></head><body><div class="content"><h1>Get 2D Homography of a projective geometry transform</h1><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Algorithom:</li></ul></div><p>Get <i>s</i> and  [ <i>H</i> ] From:</p><p><img src="GetHomography2D_eq00324903032663954186.png" alt="$$\mathit{s} \left[\begin{array}{c} \mathit{u}\\ \mathit{v}\\ 1 \end{array}\right]=&#xA;\left[\begin{array}{ccc}&#xA;\mathit{h}_{11} &amp; \mathit{h}_{12} &amp; \mathit{h}_{13}\\&#xA;\mathit{h}_{21} &amp; \mathit{h}_{22} &amp; \mathit{h}_{23}\\&#xA;\mathit{h}_{31} &amp; \mathit{h}_{32} &amp; 1 \end{array}\right]&#xA;\left[\begin{array}{c} \mathit{x}\\ \mathit{y}\\ 1 \end{array}\right]$$"></p><p>By solving:</p><p><img src="GetHomography2D_eq10718387655869429946.png" alt="$$\left[\begin{array}{cccccccc}&#xA;\mathit{x}_{1} &amp; \mathit{y}_{1} &amp;1 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u}_{1}\mathit{x}_{1}&amp; \mathit{-u}_{1}\mathit{y}_{1}\\&#xA;0 &amp;0 &amp;0 &amp; \mathit{x}_{1} &amp; \mathit{y}_{1} &amp;1 &amp; \mathit{-v}_{1}\mathit{x}_{1}&amp; \mathit{-v}_{1}\mathit{y}_{1}\\&#xA;                              &amp;   &amp;   &amp;   &amp; \vdots\\&#xA;\mathit{x_{n}} &amp; \mathit{y_{n}} &amp;1 &amp;0 &amp;0 &amp;0 &amp; \mathit{-u_{n}}\mathit{x_{n}}&amp; \mathit{-u_{n}}\mathit{y_{n}}\\&#xA;0 &amp;0 &amp;0 &amp; \mathit{x_{n}} &amp; \mathit{y_{n}} &amp;1 &amp; \mathit{-v_{n}}\mathit{x_{n}}&amp; \mathit{-v_{n}}\mathit{y_{n}}\\&#xA;\end{array}\right]&#xA;\left[\begin{array}{c}&#xA;\mathit{h}_{11} \\ \mathit{h}_{12} \\ \mathit{h}_{13}\\&#xA;\mathit{h}_{21} \\ \mathit{h}_{22} \\ \mathit{h}_{23}\\&#xA;\mathit{h}_{31} \\ \mathit{h}_{32}&#xA;\end{array}\right]=&#xA;\left[\begin{array}{c}&#xA;\mathit{u}_{1} \\ \mathit{v}_{1} \\ \vdots \\ \mathit{u_{n}} \\ \mathit{v_{n}}&#xA;\end{array}\right]$$"></p><p><img src="GetHomography2D_eq17395726815244659456.png" alt="$$[\mathit{H_{list}}]=\left([\mathit{XYUV_{list}}]^\mathrm{T}\cdot [\mathit{XYUV_{list}}]\right)^{-1}&#xA;                       \cdot[\mathit{XYUV_{list}}]^\mathrm{T}\cdot [\mathit{UV_{list}}]$$"></p><p><img src="GetHomography2D_eq02467003451201113503.png" alt="$$\mathit{s}=[\mathit{H}]\cdot[\mathit{XY1}]\cdot[\mathit{UV1}]^\mathrm{T}&#xA;            \cdot\left( [\mathit{UV1}] \cdot [\mathit{UV1}]^\mathrm{T} \right)$$"></p><div><ul><li>Inputs:</li></ul></div><pre>   XY----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [x1,x2,...;
+                 y1,y2,...]
+   UV----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [u1,u2,...;
+                 v1,v2,...]</pre><div><ul><li>Outputs:</li></ul></div><pre>   H----3 by 3 matrix: [h11 h12 h13;
+                        h21 h22 h23;
+                        h31 h32  1]
+   s----projective para</pre><pre class="codeinput"><span class="keyword">function</span> [H,s] = GetHomography2D(XY,UV)
 <span class="comment">% Initial</span>
 [cordNum, pointNum]=size(XY);
 <span class="keyword">if</span> ~(cordNum==2 || cordNum==3)
@@ -93,7 +103,7 @@ H(2,:)=HList(4:6,1);
 H(3,1:2)=HList(7:8,1);
 H(3,3)=1;
 s=H*XY1*UV1'*inv(UV1*UV1');
-</pre><pre class="codeoutput error">Error using GetHomography2D (line 60)
+</pre><pre class="codeoutput error">Error using GetHomography2D (line 62)
 Not enough input arguments.
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
@@ -140,6 +150,7 @@ Not enough input arguments.
 %             \cdot\left( [\mathit{UV1}] \cdot [\mathit{UV1}]^\mathrm{T} \right)$$
 % 
 % * Inputs:
+%
 %     XYREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHcordNum by pointNum matrix,
 %                  cordNum==2,pointNum>=4,
 %                  [x1,x2,...;
@@ -150,6 +161,7 @@ Not enough input arguments.
 %                   v1,v2,...]
 %
 % * Outputs:
+%
 %     HREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH3 by 3 matrix: [h11 h12 h13;
 %                          h21 h22 h23;
 %                          h31 h32  1]

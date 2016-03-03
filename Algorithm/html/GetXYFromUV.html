@@ -1,0 +1,158 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Get XY from UV according to 2D Homography of a projective geometry transform</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-03"><meta name="DC.source" content="GetXYFromUV.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Get XY from UV according to 2D Homography of a projective geometry transform</h1><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Algorithom:</li></ul></div><p>Get [ <i>XY</i> ] By solving:</p><p><img src="GetXYFromUV_eq00610096119191778859.png" alt="$$\left[\begin{array}{c} \mathit{x}\\ \mathit{y} \end{array}\right]=&#xA;\left[\begin{array}{cc}&#xA;\mathit{u}\cdot\mathit{h}_{31}-\mathit{h}_{11} &amp; \mathit{u}\cdot\mathit{h}_{32}-\mathit{h}_{12} \\&#xA;\mathit{v}\cdot\mathit{h}_{31}-\mathit{h}_{21} &amp; \mathit{v}\cdot\mathit{h}_{32}-\mathit{h}_{22} \end{array}\right]&#xA;\left[\begin{array}{c} \mathit{h}_{13}-\mathit{u}\\ \mathit{h}_{23}-\mathit{v} \end{array}\right]$$"></p><div><ul><li>Inputs:</li></ul></div><pre>   H----3 by 3 matrix: [h11 h12 h13;
+                        h21 h22 h23;
+                        h31 h32  1]
+   UV----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [u1,u2,...;
+                 v1,v2,...]</pre><div><ul><li>Outputs:</li></ul></div><pre>   XY----cordNum by pointNum matrix,
+                cordNum==2,pointNum&gt;=4,
+                [x1,x2,...;
+                 y1,y2,...]</pre><pre class="codeinput"><span class="keyword">function</span> XY = GetXYFromUV(H,UV)
+<span class="comment">% Initial</span>
+[cordNum, pointNum]=size(UV);
+<span class="keyword">if</span> ~(cordNum==2 || cordNum==3)
+    error(<span class="string">'Input matrix size error!'</span>);
+<span class="keyword">end</span>
+[hH, wH]=size(H);
+<span class="keyword">if</span> hH~=3 ||~(wH==3 || wH==4)
+    error(<span class="string">'Input matrix size error!'</span>);
+<span class="keyword">end</span>
+<span class="keyword">if</span> wH==4
+    H=[H(:,1:2) H(:,4)];
+<span class="keyword">end</span>
+XY=ones(2,pointNum,<span class="string">'double'</span>);
+UV=UV(1:2,:);
+<span class="comment">% Algorithm</span>
+<span class="keyword">for</span> i=1:pointNum
+   G=[UV(1,i)*H(3,1)-H(1,1),UV(1,i)*H(3,2)-H(1,2);
+      UV(2,i)*H(3,1)-H(2,1),UV(2,i)*H(3,2)-H(2,2)];
+   XY(:,i)=inv(G)*[H(1,3)-UV(1,i);H(2,3)-UV(2,i)];
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using GetXYFromUV (line 36)
+Not enough input arguments.
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Get XY from UV according to 2D Homography of a projective geometry transform
+% * Author: WANG Lei,USTB
+%
+% * Link: <https://github.com/shidafu/ViewConeCalibration.git>
+%
+% * Date:2016/3/3
+%
+% * Algorithom:
+%
+% Get [ _XY_ ] By solving:
+%
+% $$\left[\begin{array}{c} \mathit{x}\\ \mathit{y} \end{array}\right]=
+% \left[\begin{array}{cc} 
+% \mathit{u}\cdot\mathit{h}_{31}-\mathit{h}_{11} & \mathit{u}\cdot\mathit{h}_{32}-\mathit{h}_{12} \\
+% \mathit{v}\cdot\mathit{h}_{31}-\mathit{h}_{21} & \mathit{v}\cdot\mathit{h}_{32}-\mathit{h}_{22} \end{array}\right]
+% \left[\begin{array}{c} \mathit{h}_{13}-\mathit{u}\\ \mathit{h}_{23}-\mathit{v} \end{array}\right]$$
+%
+% * Inputs:
+%
+%     HREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH3 by 3 matrix: [h11 h12 h13;
+%                          h21 h22 h23;
+%                          h31 h32  1]
+%     UVREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHcordNum by pointNum matrix,
+%                  cordNum==2,pointNum>=4,
+%                  [u1,u2,...;
+%                   v1,v2,...]
+%
+% * Outputs:
+%
+%     XYREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHcordNum by pointNum matrix,
+%                  cordNum==2,pointNum>=4,
+%                  [x1,x2,...;
+%                   y1,y2,...]
+function XY = GetXYFromUV(H,UV)
+% Initial
+[cordNum, pointNum]=size(UV);
+if ~(cordNum==2 || cordNum==3)
+    error('Input matrix size error!');
+end
+[hH, wH]=size(H);
+if hH~=3 ||~(wH==3 || wH==4)
+    error('Input matrix size error!');
+end
+if wH==4
+    H=[H(:,1:2) H(:,4)];
+end
+XY=ones(2,pointNum,'double');
+UV=UV(1:2,:);
+% Algorithm
+for i=1:pointNum
+   G=[UV(1,i)*H(3,1)-H(1,1),UV(1,i)*H(3,2)-H(1,2);
+      UV(2,i)*H(3,1)-H(2,1),UV(2,i)*H(3,2)-H(2,2)];
+   XY(:,i)=inv(G)*[H(1,3)-UV(1,i);H(2,3)-UV(2,i)];
+end
+##### SOURCE END #####
+--></body></html>
