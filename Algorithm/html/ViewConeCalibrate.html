@@ -1,0 +1,567 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ViewConeCalibrate</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-04"><meta name="DC.source" content="ViewConeCalibrate.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Image calibrate based on view cone</a></li><li><a href="#2">Fix the direction of view cone ellipse</a></li></ul></div><h2>Image calibrate based on view cone<a name="1"></a></h2><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Algorithom:</li></ul></div><p><img vspace="5" hspace="5" src="..\png\ViewConeModel.png" alt=""> </p><div><ol><li>*Get 2D Homography</li><li>Get C' &#915;c' &#915;u' &#915;v'</li><li>Get Zc from ellipse &#915;c'</li><li>Get Xc Yc from ellipse &#915;c'</li><li>*Or Get Zc from ellipse &#915;c'and focus</li></ol></div><div><ul><li>Inputs:</li></ul></div><pre>   Homography2D ---- UV must be center based but not lefttop based
+   imageHeight,imageWidth
+   %radius ---- radius of &#915;c &lt; min(imageWidth,imageHeight)
+   'F',F ---- Object focus length if known
+   'F_Pixlength',F_Pixlength ---- Focus/Pixlength if known from other image</pre><div><ul><li>Outputs:</li></ul></div><pre>   A,Rd---- Inner and outer camera para matrix
+   Xc,Yc,Zc,C,O,thetaZc,phiZc---- axis vector and angle
+   F ---- Object focus length
+     Pixlength ---- center pixel real size in vertical object surface
+   Circle ---- Circle matrix in image plane
+               [UV]'[Circle][UV]=0
+     ConePointsinUV ---- [CenterU,ConePointsinU1,ConePointsinU2,...;
+                          CenterV,ConePointsinV1,ConePointsinV2,...]
+     r ---- Radius of circle in UV plane
+   Ellipse ---- Ellipse matrix in XY plane
+               [XY]'[Ellipse][XY]=0
+     ConePointsinXY ---- [CenterX,ConePointsinX1,ConePointsinX2,...;
+                          CenterY,ConePointsinY1,ConePointsiY2,...]
+     HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2
+                    ---- Ellipse paras in XY plane</pre><pre class="codeinput"><span class="keyword">function</span> [A,Rd,<span class="keyword">...</span>
+          Xc,Yc,Zc,C,O,thetaZc,phiZc,<span class="keyword">...</span>
+          F,Pixlength,<span class="keyword">...</span>
+          Circle,ConePointsinUV,r,<span class="keyword">...</span>
+          Ellipse,ConePointsinXY,HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2]<span class="keyword">...</span>
+       = ViewConeCalibrate(varargin)
+<span class="comment">% function [A,Rd,...</span>
+<span class="comment">%           Xc,Yc,Zc,C,O,thetaZc,phiZc,...</span>
+<span class="comment">%           F,Pixlength,...</span>
+<span class="comment">%           Circle,ConePointsinUV,...</span>
+<span class="comment">%           Ellipse,ConePointsinXY,HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2]...</span>
+<span class="comment">%     = ViewConeCalibriteBy2DCorners(Homography2D,imageHeight,imageWidth,radius,'F',F,'F_Pixarea',F_Pixarea)</span>
+<span class="comment">% Get inputs</span>
+F=NaN;
+F_Pixlength=NaN;
+Homography2D=varargin{1};
+imageHeight=varargin{2};
+imageWidth=varargin{3};
+<span class="comment">% coneRadius=varargin{4};</span>
+<span class="comment">% r=coneRadius;</span>
+<span class="keyword">if</span> nargin&gt;=5
+    paraIndex=4;
+    <span class="keyword">while</span> paraIndex&lt;nargin
+        paraIndex=paraIndex+1;
+        <span class="keyword">if</span>(ischar(varargin{paraIndex}))
+            <span class="keyword">if</span>(strcmp(varargin{paraIndex},<span class="string">'F'</span>))
+                  <span class="keyword">if</span>(nargin&gt;=paraIndex+1)
+                      <span class="keyword">if</span>(~ischar(varargin{paraIndex+1}))
+                          F=varargin{paraIndex+1};
+                      <span class="keyword">else</span>
+                          error(<span class="string">'Input parameter area error'</span>);
+                      <span class="keyword">end</span>
+                      paraIndex=paraIndex+1;
+                      <span class="keyword">continue</span>;
+                  <span class="keyword">end</span>
+             <span class="keyword">elseif</span>(strcmp(varargin{paraIndex},<span class="string">'F_Pixarea'</span>))
+                  <span class="keyword">if</span>(nargin&gt;=paraIndex+1)
+                      <span class="keyword">if</span>(~ischar(varargin{paraIndex+1}))
+                          F_Pixlength=varargin{paraIndex+1};
+                      <span class="keyword">else</span>
+                          error(<span class="string">'Input parameter area error'</span>);
+                      <span class="keyword">end</span>
+                      paraIndex=paraIndex+1;
+                      <span class="keyword">continue</span>;
+                  <span class="keyword">end</span>
+             <span class="keyword">end</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">% 1. *Get 2D Homography</span>
+Homography2D;
+
+<span class="comment">% 2. Get C' ConePointsinXY  &#915;c' &#915;u' &#915;v'</span>
+<span class="comment">% C:</span>
+CenterinUV=[0;0];
+<span class="comment">% C':</span>
+CenterinXY = GetXYFromUV(Homography2D,CenterinUV);
+<span class="comment">% ConePointsinUV</span>
+angleDiv=4;
+angleNum=angleDiv*4;
+angleAdd=2*pi/angleNum;
+coneRadius=3*min(imageHeight,imageWidth)/8;<span class="comment">%,min(height,width)/4</span>
+r=coneRadius;
+conePointNum=angleNum+1;
+ConePointsinUV=nan(2,conePointNum,<span class="string">'double'</span>);
+<span class="keyword">for</span> i=1:conePointNum
+    ConePointsinUV(:,i)=double(CenterinUV);
+<span class="keyword">end</span>
+<span class="keyword">for</span> i=1:angleNum
+    index=i+1;
+    ConePointsinUV(1,index)=ConePointsinUV(1,index)+coneRadius*cos(angleAdd*(i-1));
+    ConePointsinUV(2,index)=ConePointsinUV(2,index)+coneRadius*sin(angleAdd*(i-1));
+<span class="keyword">end</span>
+<span class="comment">% ConePointsinXY</span>
+<span class="comment">% ConePointsinXY=nan(2,conePointNum,'double');</span>
+ConePointsinXY = GetXYFromUV(Homography2D,ConePointsinUV);
+
+<span class="comment">% &#915;c:[UV1]'[Circle][UV1]=0</span>
+Circle=[1,0,0;<span class="keyword">...</span>
+        0,1,0;<span class="keyword">...</span>
+        0,0,-coneRadius*coneRadius];
+<span class="comment">% &#915;c':[XY1]'[Ellipse][XY1]=0</span>
+Ellipse=Homography2D'*Circle*Homography2D;
+[HEllipse,Rotate,Shift,a,b,c,e,phi,CenterinXY2,Focus,Peaks1,Peaks2]<span class="keyword">...</span>
+     = GetHorizontalEllipse(Ellipse);
+[Focus,Peaks1] = FixDirection(ConePointsinXY,Focus,Peaks1);
+CenterinXY-CenterinXY2;
+<span class="comment">% &#915;u:[LineU][UV1]=0</span>
+LineU=[1 0 0];
+<span class="comment">% &#915;u':[LineUinXY][XY1]=0</span>
+LineUinXY=LineU*Homography2D;
+<span class="comment">% &#915;v:LineV][UV1]=0</span>
+LineV=[0 1 0];
+<span class="comment">% &#915;v':[LineVinXY][XY1]=0</span>
+LineVinXY=LineV*Homography2D;
+
+<span class="comment">% 3. Get Zc from ellipse &#915;c'</span>
+<span class="comment">%Vector2D in XY of camera/viewcone axis pointout from camera</span>
+<span class="comment">%Angle of Zc axis with XY plane</span>
+ConePointsinXY1Fix=inv([Peaks1(1,2)-Peaks1(1,1) Peaks1(2,2)-Peaks1(2,1);<span class="keyword">...</span>
+               Peaks1(2,1)-Peaks1(2,2) Peaks1(1,2)-Peaks1(1,1)])*<span class="keyword">...</span>
+              ([ConePointsinXY(1,1) ConePointsinXY(2,1);Peaks1(2,1) -Peaks1(1,1)]*(Peaks1(:,2)-Peaks1(:,1)));
+<span class="comment">%plot(ConePointsinXY1Fix(1,:),ConePointsinXY1Fix(2,:), 'b+');</span>
+Zcxy=(Peaks1(:,1)-Peaks1(:,2))/norm(Peaks1(:,1)-Peaks1(:,2));
+phiZc=acossin([Zcxy(1,1),Zcxy(2,1)]);
+<span class="comment">%Angle of Zc axis with XY plane !!!!!</span>
+D1D3=norm(Peaks2(:,1)-Peaks2(:,2));
+D2C=norm(Peaks1(:,1)-ConePointsinXY1Fix);
+D4C=norm(Peaks1(:,2)-ConePointsinXY1Fix);
+<span class="keyword">if</span> isnan(F)
+    thetaZc=asin(D1D3*((1/D2C)+(1/D4C))/4);
+    F=D1D3*(D2C+D4C)/(2*tan(thetaZc)*abs(D4C-D2C));
+<span class="keyword">else</span>
+    thetaZc=acos(0.5*F*abs((1/D4C)-(1/D2C)));
+<span class="keyword">end</span>
+
+<span class="comment">% 4. Get Xc Yc from ellipse &#915;c'</span>
+<span class="comment">%Vector3D in XYZ space</span>
+Zcxy=Zcxy*cos(thetaZc);
+Zc=[Zcxy;-sin(thetaZc)];
+normZc=norm(Zc);
+Zc=Zc/normZc;
+Xcxy=NaN;
+dist3=norm(ConePointsinXY(:,2)-ConePointsinXY(:,1));
+dist31=norm(ConePointsinXY(:,2+angleNum/2)-ConePointsinXY(:,1));
+Xcxy=(ConePointsinXY(:,2)-ConePointsinXY(:,1))/dist3<span class="keyword">...</span>
+    +(ConePointsinXY(:,1)-ConePointsinXY(:,2+angleNum/2))/dist31;
+Xcxy=Xcxy/2;
+Xcxy=[Xcxy;0];
+Xcv=cross(Zc,Xcxy);<span class="comment">% vertical inter vector3D</span>
+Xc= cross(Xcv,Zc);
+Xc=Xc/(norm(Xc));
+Ycxy=NaN;
+dist4=norm(ConePointsinXY(:,2+angleNum/4)-ConePointsinXY(:,1));
+dist41=norm(ConePointsinXY(:,2+3*angleNum/4)-ConePointsinXY(:,1));
+Ycxy=(ConePointsinXY(:,2+angleNum/4)-ConePointsinXY(:,1))/dist4<span class="keyword">...</span>
+    +(ConePointsinXY(:,1)-ConePointsinXY(:,2+3*angleNum/4))/dist41;
+Ycxy=Ycxy/2;
+Ycxy=[Ycxy;0];
+Ycv=cross(Zc,Ycxy);<span class="comment">% vertical inter vector3D</span>
+Yc= cross(Ycv,Zc);
+Yc=Yc/(norm(Yc));
+
+<span class="comment">% 5. *Or Get Zc from ellipse &#915;c'and focus</span>
+<span class="comment">%  Take the chord vertical with major axis of ellipse and through</span>
+<span class="comment">%         circle center's mapping point inside ellipse,the chord's length</span>
+<span class="comment">%         is in direct proportion to object Distance;</span>
+chordVector=Peaks2(:,1)-Peaks2(:,2);
+syms <span class="string">x</span> <span class="string">y</span> <span class="string">real</span>;
+[solutions_x, solutions_y]=solve([x y 1]*M*[x;y;1]==0,<span class="keyword">...</span>
+    (x-ConePointsinXY(1,1))*chordVector(2,1)==(y-ConePointsinXY(2,1))*chordVector(1,1),x,y);
+chordVector=[double(solutions_x(1))-double(solutions_x(2)),<span class="keyword">...</span>
+    double(solutions_y(1))-double(solutions_y(2))];
+chordLength=sqrt(chordVector*chordVector');
+Pixlength=chordLength/(2*coneRadius);
+defaultObjectDistance=100;
+<span class="keyword">if</span> ~isnan(F)
+<span class="keyword">else</span>
+    <span class="keyword">if</span> ~isnan(F_Pixlength)
+        F=Pixlength*F_Pixlength;
+    <span class="keyword">else</span>
+        F=defaultObjectDistance;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+xc=ConePointsinXY(1,1);
+yc=ConePointsinXY(2,1);
+zc=0;
+O=[xc;yc;zc];
+xc=xc-F*Zc(1,1);
+yc=yc-F*Zc(2,1);
+zc=zc-F*Zc(3,1);
+C=[xc;yc;zc];
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Index exceeds matrix dimensions.
+
+Error in ViewConeCalibrate (line 59)
+Homography2D=varargin{1};
+</pre><h2>Fix the direction of view cone ellipse<a name="2"></a></h2><div><ul><li>Author: WANG Lei,USTB</li></ul></div><div><ul><li>Link: <a href="https://github.com/shidafu/ViewConeCalibration.git">https://github.com/shidafu/ViewConeCalibration.git</a></li></ul></div><div><ul><li>Date:2016/3/3</li></ul></div><div><ul><li>Inputs:</li></ul></div><pre>   ConePointsinUV ---- UV must be center based but not lefttop based
+   Focus  ---- 2 by 1 array,Focus point of the source ellipse;
+   Peaks1 ---- 2 by 1 array,Peak points in long axis of the source ellipse;</pre><div><ul><li>Outputs:</li></ul></div><pre>   Focus  ---- 2 by 1 array,Focus point of the source ellipse;
+   Peaks1 ---- 2 by 1 array,Peak points in long axis of the source ellipse;</pre><pre class="codeinput"><span class="keyword">function</span> [Focus,Peaks1] = FixDirection(ConePointsinXY,Focus,Peaks1)
+[hXY,wXY]=size(ConePointsinXY);
+<span class="keyword">if</span> hXY==2
+    pointNum=wXY;
+<span class="keyword">elseif</span> wXY==2
+    ConePointsinXY=ConePointsinXY';
+    pointNum=hXY;
+<span class="keyword">else</span>
+    error(<span class="string">'Error size of input matrix!'</span>);
+<span class="keyword">end</span>
+<span class="comment">%sum point left or right</span>
+leftNum=0;
+rightNum=0;
+<span class="keyword">for</span> i=1:pointNum
+    <span class="keyword">if</span> norm(Peaks1(:,1)-ConePointsinXY(:,i))&lt;norm(Peaks1(:,2)-ConePointsinXY(:,i));
+        leftNum=leftNum+1;
+    <span class="keyword">else</span>
+        rightNum=rightNum+1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> leftNum&gt;rightNum
+    tmp=Peaks1;
+    Peaks1(:,1)=tmp(:,2);
+    Peaks1(:,2)=tmp(:,1);
+<span class="keyword">end</span>
+<span class="keyword">if</span> norm(Peaks1(:,1)-Focus(:,1))&gt;norm(Peaks1(:,2)-Focus(:,1));
+    tmp=Focus;
+    Focus(:,1)=tmp(:,2);
+    Focus(:,2)=tmp(:,1);
+<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Image calibrate based on view cone
+% * Author: WANG Lei,USTB
+%
+% * Link: <https://github.com/shidafu/ViewConeCalibration.git>
+%
+% * Date:2016/3/3
+%
+% * Algorithom:  
+%
+% <<..\png\ViewConeModel.png>>
+% 
+% # *Get 2D Homography
+% # Get C' Γc' Γu' Γv'
+% # Get Zc from ellipse Γc'
+% # Get Xc Yc from ellipse Γc'
+% # *Or Get Zc from ellipse Γc'and focus
+% 
+% * Inputs:
+%
+%     Homography2D REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH UV must be center based but not lefttop based
+%     imageHeight,imageWidth
+%     %radius REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH radius of Γc < min(imageWidth,imageHeight)
+%     'F',F REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Object focus length if known
+%     'F_Pixlength',F_Pixlength REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Focus/Pixlength if known from other image
+% 
+% * Outputs:
+%
+%     A,RdREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Inner and outer camera para matrix
+%     Xc,Yc,Zc,C,O,thetaZc,phiZcREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH axis vector and angle
+%     F REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Object focus length
+%       Pixlength REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH center pixel real size in vertical object surface
+%     Circle REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Circle matrix in image plane
+%                 [UV]'[Circle][UV]=0
+%       ConePointsinUV REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH [CenterU,ConePointsinU1,ConePointsinU2,...;
+%                            CenterV,ConePointsinV1,ConePointsinV2,...]
+%       r REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Radius of circle in UV plane
+%     Ellipse REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Ellipse matrix in XY plane
+%                 [XY]'[Ellipse][XY]=0
+%       ConePointsinXY REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH [CenterX,ConePointsinX1,ConePointsinX2,...;
+%                            CenterY,ConePointsinY1,ConePointsiY2,...]
+%       HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2
+%                      REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH Ellipse paras in XY plane
+%
+function [A,Rd,...
+          Xc,Yc,Zc,C,O,thetaZc,phiZc,...
+          F,Pixlength,...
+          Circle,ConePointsinUV,r,...
+          Ellipse,ConePointsinXY,HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2]...
+       = ViewConeCalibrate(varargin)
+% function [A,Rd,...
+%           Xc,Yc,Zc,C,O,thetaZc,phiZc,...
+%           F,Pixlength,...
+%           Circle,ConePointsinUV,...
+%           Ellipse,ConePointsinXY,HEllipse,Rotate,Shift,a,b,c,e,phi,Focus,Peaks1,Peaks2]...
+%     = ViewConeCalibriteBy2DCorners(Homography2D,imageHeight,imageWidth,radius,'F',F,'F_Pixarea',F_Pixarea)
+% Get inputs
+F=NaN;
+F_Pixlength=NaN;
+Homography2D=varargin{1};
+imageHeight=varargin{2};
+imageWidth=varargin{3};
+% coneRadius=varargin{4};
+% r=coneRadius;
+if nargin>=5
+    paraIndex=4;
+    while paraIndex<nargin
+        paraIndex=paraIndex+1;
+        if(ischar(varargin{paraIndex}))
+            if(strcmp(varargin{paraIndex},'F'))
+                  if(nargin>=paraIndex+1)
+                      if(~ischar(varargin{paraIndex+1})) 
+                          F=varargin{paraIndex+1};
+                      else
+                          error('Input parameter area error');
+                      end
+                      paraIndex=paraIndex+1;
+                      continue;
+                  end
+             elseif(strcmp(varargin{paraIndex},'F_Pixarea'))
+                  if(nargin>=paraIndex+1)
+                      if(~ischar(varargin{paraIndex+1})) 
+                          F_Pixlength=varargin{paraIndex+1};
+                      else
+                          error('Input parameter area error');
+                      end
+                      paraIndex=paraIndex+1;
+                      continue;
+                  end
+             end
+        end
+    end
+end
+% 1. *Get 2D Homography
+Homography2D;
+
+% 2. Get C' ConePointsinXY  Γc' Γu' Γv' 
+% C:
+CenterinUV=[0;0];
+% C':
+CenterinXY = GetXYFromUV(Homography2D,CenterinUV);
+% ConePointsinUV
+angleDiv=4;
+angleNum=angleDiv*4;
+angleAdd=2*pi/angleNum;
+coneRadius=3*min(imageHeight,imageWidth)/8;%,min(height,width)/4
+r=coneRadius;
+conePointNum=angleNum+1;
+ConePointsinUV=nan(2,conePointNum,'double');
+for i=1:conePointNum
+    ConePointsinUV(:,i)=double(CenterinUV);
+end
+for i=1:angleNum
+    index=i+1;
+    ConePointsinUV(1,index)=ConePointsinUV(1,index)+coneRadius*cos(angleAdd*(i-1));
+    ConePointsinUV(2,index)=ConePointsinUV(2,index)+coneRadius*sin(angleAdd*(i-1));
+end
+% ConePointsinXY
+% ConePointsinXY=nan(2,conePointNum,'double');
+ConePointsinXY = GetXYFromUV(Homography2D,ConePointsinUV);
+
+% Γc:[UV1]'[Circle][UV1]=0
+Circle=[1,0,0;...
+        0,1,0;...
+        0,0,-coneRadius*coneRadius];
+% Γc':[XY1]'[Ellipse][XY1]=0
+Ellipse=Homography2D'*Circle*Homography2D;
+[HEllipse,Rotate,Shift,a,b,c,e,phi,CenterinXY2,Focus,Peaks1,Peaks2]...
+     = GetHorizontalEllipse(Ellipse);
+[Focus,Peaks1] = FixDirection(ConePointsinXY,Focus,Peaks1);
+CenterinXY-CenterinXY2;
+% Γu:[LineU][UV1]=0
+LineU=[1 0 0];
+% Γu':[LineUinXY][XY1]=0
+LineUinXY=LineU*Homography2D;
+% Γv:LineV][UV1]=0
+LineV=[0 1 0];
+% Γv':[LineVinXY][XY1]=0
+LineVinXY=LineV*Homography2D;
+
+% 3. Get Zc from ellipse Γc'
+%Vector2D in XY of camera/viewcone axis pointout from camera
+%Angle of Zc axis with XY plane
+ConePointsinXY1Fix=inv([Peaks1(1,2)-Peaks1(1,1) Peaks1(2,2)-Peaks1(2,1);...
+               Peaks1(2,1)-Peaks1(2,2) Peaks1(1,2)-Peaks1(1,1)])*...
+              ([ConePointsinXY(1,1) ConePointsinXY(2,1);Peaks1(2,1) -Peaks1(1,1)]*(Peaks1(:,2)-Peaks1(:,1)));
+%plot(ConePointsinXY1Fix(1,:),ConePointsinXY1Fix(2,:), 'b+');
+Zcxy=(Peaks1(:,1)-Peaks1(:,2))/norm(Peaks1(:,1)-Peaks1(:,2));
+phiZc=acossin([Zcxy(1,1),Zcxy(2,1)]);
+%Angle of Zc axis with XY plane !!!!!
+D1D3=norm(Peaks2(:,1)-Peaks2(:,2));
+D2C=norm(Peaks1(:,1)-ConePointsinXY1Fix);
+D4C=norm(Peaks1(:,2)-ConePointsinXY1Fix);
+if isnan(F)
+    thetaZc=asin(D1D3*((1/D2C)+(1/D4C))/4);
+    F=D1D3*(D2C+D4C)/(2*tan(thetaZc)*abs(D4C-D2C));
+else
+    thetaZc=acos(0.5*F*abs((1/D4C)-(1/D2C)));
+end
+
+% 4. Get Xc Yc from ellipse Γc'
+%Vector3D in XYZ space
+Zcxy=Zcxy*cos(thetaZc);
+Zc=[Zcxy;-sin(thetaZc)];
+normZc=norm(Zc);
+Zc=Zc/normZc;
+Xcxy=NaN;
+dist3=norm(ConePointsinXY(:,2)-ConePointsinXY(:,1));
+dist31=norm(ConePointsinXY(:,2+angleNum/2)-ConePointsinXY(:,1));
+Xcxy=(ConePointsinXY(:,2)-ConePointsinXY(:,1))/dist3...
+    +(ConePointsinXY(:,1)-ConePointsinXY(:,2+angleNum/2))/dist31;
+Xcxy=Xcxy/2;
+Xcxy=[Xcxy;0];
+Xcv=cross(Zc,Xcxy);% vertical inter vector3D
+Xc= cross(Xcv,Zc);
+Xc=Xc/(norm(Xc));
+Ycxy=NaN;
+dist4=norm(ConePointsinXY(:,2+angleNum/4)-ConePointsinXY(:,1));
+dist41=norm(ConePointsinXY(:,2+3*angleNum/4)-ConePointsinXY(:,1));
+Ycxy=(ConePointsinXY(:,2+angleNum/4)-ConePointsinXY(:,1))/dist4...
+    +(ConePointsinXY(:,1)-ConePointsinXY(:,2+3*angleNum/4))/dist41;
+Ycxy=Ycxy/2;
+Ycxy=[Ycxy;0];
+Ycv=cross(Zc,Ycxy);% vertical inter vector3D
+Yc= cross(Ycv,Zc);
+Yc=Yc/(norm(Yc));
+
+% 5. *Or Get Zc from ellipse Γc'and focus
+%  Take the chord vertical with major axis of ellipse and through
+%         circle center's mapping point inside ellipse,the chord's length
+%         is in direct proportion to object Distance;
+chordVector=Peaks2(:,1)-Peaks2(:,2);
+syms x y real;
+[solutions_x, solutions_y]=solve([x y 1]*M*[x;y;1]==0,...
+    (x-ConePointsinXY(1,1))*chordVector(2,1)==(y-ConePointsinXY(2,1))*chordVector(1,1),x,y);
+chordVector=[double(solutions_x(1))-double(solutions_x(2)),...
+    double(solutions_y(1))-double(solutions_y(2))];
+chordLength=sqrt(chordVector*chordVector');
+Pixlength=chordLength/(2*coneRadius);
+defaultObjectDistance=100;
+if ~isnan(F)
+else
+    if ~isnan(F_Pixlength)
+        F=Pixlength*F_Pixlength;
+    else
+        F=defaultObjectDistance;
+    end
+end
+xc=ConePointsinXY(1,1);
+yc=ConePointsinXY(2,1);
+zc=0;
+O=[xc;yc;zc];
+xc=xc-F*Zc(1,1);
+yc=yc-F*Zc(2,1);
+zc=zc-F*Zc(3,1);
+C=[xc;yc;zc];
+end
+
+%% Fix the direction of view cone ellipse
+% * Author: WANG Lei,USTB
+%
+% * Link: <https://github.com/shidafu/ViewConeCalibration.git>
+%
+% * Date:2016/3/3
+%
+% * Inputs:
+%
+%     ConePointsinUV REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH UV must be center based but not lefttop based
+%     Focus  REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH 2 by 1 array,Focus point of the source ellipse;
+%     Peaks1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH 2 by 1 array,Peak points in long axis of the source ellipse;
+% 
+% * Outputs:
+%
+%     Focus  REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH 2 by 1 array,Focus point of the source ellipse;
+%     Peaks1 REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH 2 by 1 array,Peak points in long axis of the source ellipse;
+%
+function [Focus,Peaks1] = FixDirection(ConePointsinXY,Focus,Peaks1)
+[hXY,wXY]=size(ConePointsinXY);
+if hXY==2
+    pointNum=wXY;
+elseif wXY==2
+    ConePointsinXY=ConePointsinXY';
+    pointNum=hXY;
+else
+    error('Error size of input matrix!');
+end
+%sum point left or right
+leftNum=0;
+rightNum=0;
+for i=1:pointNum
+    if norm(Peaks1(:,1)-ConePointsinXY(:,i))<norm(Peaks1(:,2)-ConePointsinXY(:,i));
+        leftNum=leftNum+1;
+    else
+        rightNum=rightNum+1;
+    end
+end
+if leftNum>rightNum
+    tmp=Peaks1;
+    Peaks1(:,1)=tmp(:,2);
+    Peaks1(:,2)=tmp(:,1);
+end
+if norm(Peaks1(:,1)-Focus(:,1))>norm(Peaks1(:,2)-Focus(:,1));
+    tmp=Focus;
+    Focus(:,1)=tmp(:,2);
+    Focus(:,2)=tmp(:,1);
+end
+end
+##### SOURCE END #####
+--></body></html>
